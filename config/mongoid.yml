@@ -1,0 +1,6 @@
+development:
+  clients:
+    default:
+      uri: mongodb+srv://inabotnaru1:RZuNvZ587ywUoOvE@cluster0.0fx9x.mongodb.net/pad-db?retryWrites=true&w=majority
+      options:
+        server_selection_timeout: 5

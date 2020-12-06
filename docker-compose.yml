@@ -1,0 +1,39 @@
+version: '3.8'
+services: 
+    order-service:
+        build: .
+        container_name: pad-order-service
+        ports: ['8000:8000']
+        environment:
+            - IP=order-service
+            - PORT=8000
+        command: >
+          /bin/sh -c "
+            echo Waiting for rabbitmq service start...;
+            while ! nc -z rabbitmq-service 5672;
+            do
+              sleep 1;
+            done;
+            echo RabbitMQ ready.;
+            ruby main.rb"
+        networks: 
+          - internal
+
+    rabbitmq-service:
+      image: rabbitmq:3-management
+      hostname: rabbitmq-service
+      container_name: rabbitmq-service
+      volumes:
+        - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+        - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+        - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+        - ./rabbitmq/logs:/var/log/rabbitmq/log
+      ports:
+        - 5672:5672
+        - 15672:15672
+      networks: 
+        - internal
+
+networks: 
+  internal: 
+    driver: bridge
