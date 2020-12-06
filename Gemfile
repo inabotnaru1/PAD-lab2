@@ -8,3 +8,4 @@ gem "sinatra-contrib", "~> 2.1"
 gem 'event_bus'
 gem 'rocketman'
 gem 'logstash-logger'
+gem "bunny"
