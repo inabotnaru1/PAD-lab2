@@ -38,7 +38,7 @@ TASK_LIMIT = 8
 
 begin
 at_exit do
-  RestClient.post GATEWAY_ADRESS + "services/deregister", {"name": "test","address": "localhost:8888"}.to_json
+  RestClient.post GATEWAY_ADRESS + "services/deregister", {"name": "test","address": "localhost:8000"}.to_json
 end
 rescue
   puts "Error when exit"
@@ -47,7 +47,7 @@ ensure
 end
 
 begin
-RestClient.post GATEWAY_ADRESS + "register", {"name": "order-service","address": "localhost:52506"}.to_json
+RestClient.post GATEWAY_ADRESS + "register", {"name": "order-service","address": "localhost:8000"}.to_json
 rescue
   puts "Connection to the gateway failed"
 ensure 
