@@ -15,7 +15,7 @@ connection = Bunny.new("amqp://guest:guest@rabbitmq-service:5672")
 connection.start
 
 set :bind, '0.0.0.0'
-set :port, 8000
+set :port, ENV["PORT"]
 
 Mongoid.load!(File.join(File.dirname(__FILE__), 'config', 'mongoid.yml'))
 channel = connection.create_channel
@@ -30,16 +30,16 @@ queue.subscribe do |_delivery_info, _properties, body|
   order.save
 end
 
-GATEWAY_ADRESS = "http://localhost:52506/"
-
 SERVICE_ID = SecureRandom.hex
 
 TASK_LIMIT = 8
 
+GATEWAY_ADRESS = "http://apigatewaypad:80/"
+
 begin
-at_exit do
-  RestClient.post GATEWAY_ADRESS + "services/deregister", {"name": "test","address": "localhost:8000"}.to_json
-end
+  at_exit do
+    RestClient.post GATEWAY_ADRESS + "services/deregister", '{ "name": "order-service", "address": "order-service:8000" }', :content_type => "application/json"
+  end
 rescue
   puts "Error when exit"
 ensure
@@ -47,10 +47,10 @@ ensure
 end
 
 begin
-RestClient.post GATEWAY_ADRESS + "register", {"name": "order-service","address": "localhost:8000"}.to_json
+  RestClient.post GATEWAY_ADRESS + "services", '{ "name": "order-service", "address": "order-service:8000" }', :content_type => "application/json"
 rescue
   puts "Connection to the gateway failed"
-ensure 
+ensure
   puts " "
 end
 
